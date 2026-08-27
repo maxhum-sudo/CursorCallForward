@@ -6,6 +6,7 @@ import {
   emptyTwiml,
   formDataToParams,
   getTwilioEnv,
+  sayAndSmsTwiml,
   sayTwiml,
   sendSms,
 } from "@/lib/twilio";
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
   if (!(await claimSid(callSid))) {
     const settings = await getSettings();
     if (isClosed(settings)) {
-      return sayTwiml(voicePrompt(settings.businessName));
+      return closedCallTwiml(settings.businessName, settings.closedMessage, from);
     }
     return ownerPhone ? dialTwiml(ownerPhone) : emptyTwiml();
   }
@@ -47,8 +48,9 @@ export async function POST(request: Request) {
 
   const settings = await getSettings();
   if (isClosed(settings)) {
+    let sentViaRest = false;
     try {
-      await sendSms(from, settings.closedMessage);
+      sentViaRest = Boolean(await sendSms(from, settings.closedMessage));
     } catch (error) {
       console.error("Closed-call SMS failed", error);
     }
@@ -63,7 +65,11 @@ export async function POST(request: Request) {
       kind: "call-closed",
     });
 
-    return sayTwiml(voicePrompt(settings.businessName));
+    if (sentViaRest) {
+      return sayTwiml(voicePrompt(settings.businessName));
+    }
+
+    return closedCallTwiml(settings.businessName, settings.closedMessage, from);
   }
 
   await addEvent({
@@ -87,4 +93,12 @@ export async function POST(request: Request) {
 
 function voicePrompt(businessName: string): string {
   return `${businessName} is closed. We'll text you now.`;
+}
+
+function closedCallTwiml(
+  businessName: string,
+  closedMessage: string,
+  caller: string,
+): Response {
+  return sayAndSmsTwiml(voicePrompt(businessName), closedMessage, caller);
 }

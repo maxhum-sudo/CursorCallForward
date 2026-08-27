@@ -72,6 +72,20 @@ export function sayTwiml(text: string): Response {
   );
 }
 
+/** Speak, then have Twilio SMS the caller as part of the same Voice response. */
+export function sayAndSmsTwiml(
+  spoken: string,
+  sms: string,
+  to?: string,
+): Response {
+  const spokenXml = escapeXml(spoken);
+  const smsXml = escapeXml(sms.slice(0, 160));
+  const toAttr = to ? ` to="${escapeXml(to)}"` : "";
+  return twiml(
+    `<?xml version="1.0" encoding="UTF-8"?><Response><Say>${spokenXml}</Say><Sms${toAttr}>${smsXml}</Sms><Hangup/></Response>`,
+  );
+}
+
 export function dialTwiml(number: string): Response {
   const escaped = escapeXml(number);
   return twiml(
@@ -82,7 +96,12 @@ export function dialTwiml(number: string): Response {
 export async function sendSms(to: string, body: string): Promise<string | null> {
   const { accountSid, authToken, phoneNumber } = getTwilioEnv();
   if (!accountSid || !authToken || !phoneNumber || !to) {
-    console.warn("sendSms skipped: missing Twilio env or destination");
+    console.warn("sendSms skipped: missing Twilio env or destination", {
+      hasAccountSid: Boolean(accountSid),
+      hasAuthToken: Boolean(authToken),
+      hasFromNumber: Boolean(phoneNumber),
+      hasTo: Boolean(to),
+    });
     return null;
   }
 
