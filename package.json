@@ -1,7 +1,11 @@
 {
-  "name": "closed-sign",
+  "name": "cursor-call-forward",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxhum-sudo/CursorCallForward.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,9 +13,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@upstash/redis": "^1.38.3",
     "next": "16.3.3",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "twilio": "^6.1.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
