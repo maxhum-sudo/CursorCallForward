@@ -82,6 +82,8 @@ UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 ```
 
+Vercel Redis (KV) injects `KV_REST_API_URL` and `KV_REST_API_TOKEN` instead. The app accepts those as aliases. Map `KV_REST_API_URL` → REST URL and `KV_REST_API_TOKEN` → REST token if you prefer the Upstash names.
+
 Create a database: [Vercel Marketplace → Upstash](https://vercel.com/marketplace/upstash) or [console.upstash.com](https://console.upstash.com). Copy the REST URL and token into `.env.local` (and later into Vercel env).
 
 Without those vars the app falls back to in-memory storage. That is fine for `next dev` + ngrok. It will **not** share state across Vercel serverless instances — the dashboard footer will say `memory`.
