@@ -6,6 +6,7 @@ import {
   type SettingsUpdate,
   updateSettings,
 } from "@/lib/store";
+import { getTwilioEnv } from "@/lib/twilio";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ async function snapshot() {
     isClosed: closed,
     status: statusLabel(settings, closed),
     hoursLabel: hoursLabel(settings),
-    businessNumber: process.env.TWILIO_PHONE_NUMBER ?? "",
+    businessNumber: getTwilioEnv().phoneNumber,
     persistence: getPersistence(),
   };
 }

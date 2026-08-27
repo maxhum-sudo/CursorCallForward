@@ -4,7 +4,13 @@ export function getTwilioEnv() {
   return {
     accountSid: process.env.TWILIO_ACCOUNT_SID ?? "",
     authToken: process.env.TWILIO_AUTH_TOKEN ?? "",
-    phoneNumber: process.env.TWILIO_PHONE_NUMBER ?? "",
+    phoneNumber: (
+      process.env.TWILIO_PHONE_NUMBER ??
+      process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER ??
+      "+15873280731"
+    )
+      .trim()
+      .replace(/^["']|["']$/g, ""),
     ownerPhone: process.env.OWNER_PHONE ?? "",
     publicBaseUrl: (process.env.PUBLIC_BASE_URL ?? "").replace(/\/$/, ""),
   };
